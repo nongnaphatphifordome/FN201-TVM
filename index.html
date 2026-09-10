@@ -244,6 +244,159 @@
     line-height:1.6;
   }
 
+  .subpanel{
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 18px 18px 16px;
+    margin-bottom: 18px;
+    display:none;
+  }
+  .subpanel.show{ display:block; }
+  .subpanel-title{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    font-weight:600;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+  .legend{
+    display:flex;
+    gap: 18px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  .legend span{ display:flex; align-items:center; gap:6px; }
+  .dot{
+    display:inline-block;
+    width:9px; height:9px;
+    border-radius:50%;
+  }
+  .dot-in{ background:#1A5C43; }
+  .dot-out{ background:#9C3B2E; }
+
+  .formula-block{
+    margin-bottom: 16px;
+  }
+  .formula-block:last-child{ margin-bottom:0; }
+  .formula-block .flabel{
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  .formula-line{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 13.5px;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 10px 12px;
+    line-height: 1.7;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .formula-line sup{ font-size: 0.7em; color: var(--accent); }
+  .formula-note{
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    margin-top: 6px;
+    line-height: 1.6;
+  }
+
+  .btn-solution{
+    display:block;
+    width:100%;
+    margin-top: 14px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.35);
+    color: #fff;
+    border-radius: 4px;
+    padding: 10px;
+    font-family:'Noto Sans Thai', sans-serif;
+    font-size: 13.5px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .btn-solution:hover{ background: rgba(255,255,255,0.2); }
+
+  .sol-row{
+    display:flex;
+    justify-content:space-between;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--line);
+    font-size: 13.5px;
+  }
+  .sol-row:last-child{ border-bottom:none; }
+  .sol-row .k{ color: var(--ink-soft); }
+  .sol-row .v{ font-family:'IBM Plex Mono', monospace; font-weight:600; color:var(--ink); }
+  .sol-row .v.given{ color: var(--primary); }
+  .sol-row .v.unknown{ color: var(--accent); }
+
+  .sol-step{
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--primary);
+    border-radius: 4px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .sol-step .step-num{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    font-weight:700;
+    letter-spacing:0.05em;
+    margin-bottom: 4px;
+  }
+  .sol-step .step-title{
+    font-size: 14px;
+    font-weight:600;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .sol-step .step-formula{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 13px;
+    background: var(--bg);
+    border-radius: 4px;
+    padding: 8px 10px;
+    overflow-x:auto;
+    white-space: nowrap;
+    margin-bottom: 6px;
+  }
+  .sol-step .step-formula sup{ font-size:0.7em; color: var(--accent); }
+  .sol-step .step-desc{
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    line-height:1.6;
+  }
+
+  .sol-answer{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 26px;
+    font-weight:700;
+    color: var(--primary);
+  }
+
+  .iter-table{
+    width:100%;
+    border-collapse: collapse;
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12px;
+    margin-top: 8px;
+  }
+  .iter-table th, .iter-table td{
+    padding: 6px 8px;
+    text-align:right;
+    border-bottom: 1px solid var(--line);
+  }
+  .iter-table th:first-child, .iter-table td:first-child{ text-align:left; }
+  .iter-table th{ color: var(--ink-soft); font-weight:600; }
+
   footer{
     text-align:center;
     font-size: 11.5px;
@@ -254,6 +407,7 @@
 </head>
 <body>
 <div class="sheet">
+<div id="page-calculator">
 
   <div class="masthead">
     <div class="kicker">TIME VALUE OF MONEY</div>
@@ -356,12 +510,51 @@
     <div class="rlabel" id="resultLabel">ผลลัพธ์</div>
     <div class="rvalue" id="resultValue">0.00</div>
     <div class="rsub" id="resultSub"></div>
+    <button class="btn-solution" onclick="openSolutionPage()">📖 ดูวิธีทำแบบละเอียด</button>
+  </div>
+
+  <div class="subpanel" id="timelineBox">
+    <div class="subpanel-title">แผนภาพเส้นเวลากระแสเงินสด (Cash Flow Timeline)</div>
+    <div id="timelineWrap"></div>
+    <div class="legend">
+      <span><i class="dot dot-in"></i>เงินรับเข้า (+)</span>
+      <span><i class="dot dot-out"></i>เงินจ่ายออก (−)</span>
+    </div>
+  </div>
+
+  <div class="subpanel" id="formulaBox">
+    <div class="subpanel-title">สูตรที่ใช้คำนวณ</div>
+    <div id="formulaContent"></div>
   </div>
 
   <footer>คำนวณตามสมการมูลค่าเงินตามเวลามาตรฐาน (5 ตัวแปร)</footer>
 </div>
 
+<div id="page-solution" style="display:none;">
+  <div class="masthead">
+    <div class="kicker">วิธีทำแบบละเอียด</div>
+    <h1 id="solTitle">ขั้นตอนการคำนวณ</h1>
+    <p id="solSubtitle"></p>
+  </div>
+
+  <div class="panel" id="solGiven">
+    <div class="subpanel-title" style="margin-bottom:12px;">ค่าที่ทราบและเงื่อนไข</div>
+    <div id="solGivenList"></div>
+  </div>
+
+  <div id="solSteps"></div>
+
+  <div class="panel" id="solAnswerPanel">
+    <div class="subpanel-title" style="margin-bottom:10px;">คำตอบ</div>
+    <div id="solAnswer" class="sol-answer"></div>
+  </div>
+
+  <button class="btn btn-ghost" style="width:100%;" onclick="closeSolutionPage()">← กลับไปหน้าคำนวณ</button>
+</div>
+</div>
+
 <script>
+let lastCalc = null; // เก็บค่าที่ใช้ในการคำนวณครั้งล่าสุด สำหรับหน้า "วิธีทำ"
 let pmtType = 0; // 0 = ordinary (ปลายงวด), 1 = due (ต้นงวด)
 let periodUnit = 'month'; // 'month' รายเดือน | 'quarter' รายไตรมาส | 'year' รายปี → กำหนดว่า 1 งวด เท่ากับอะไร
 let rateUnit = 'period';  // 'period' = อัตราต่องวด (ตรงกับ periodUnit), 'annual' = อัตราต่อปี (nominal, แปลงหาร/คูณด้วยจำนวนงวดต่อปี)
@@ -425,6 +618,8 @@ function showError(msg){
   box.textContent = msg;
   box.classList.add('show');
   document.getElementById('resultBox').classList.remove('show');
+  document.getElementById('timelineBox').classList.remove('show');
+  document.getElementById('formulaBox').classList.remove('show');
 }
 function hideError(){
   document.getElementById('errorBox').classList.remove('show');
@@ -437,6 +632,8 @@ function clearAll(){
   fields.forEach(f => document.getElementById('in-'+f).value = '');
   hideError();
   document.getElementById('resultBox').classList.remove('show');
+  document.getElementById('timelineBox').classList.remove('show');
+  document.getElementById('formulaBox').classList.remove('show');
   clearSolvedHighlight();
 }
 
@@ -446,6 +643,12 @@ function formatNumber(num, decimals){
   const parts = rounded.toFixed(decimals).split('.');
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   return parts.join('.');
+}
+
+// ตัวเลขแบบไม่ใส่คอมมา สำหรับแสดงในสมการ (อ่านง่ายกว่าเวลาแทนค่า)
+function fmtPlain(num, decimals){
+  if (num === null || num === undefined || !isFinite(num)) return '?';
+  return Number(num).toFixed(decimals);
 }
 
 function parseVal(id){
@@ -517,6 +720,123 @@ function solveI(PV, FV, PMT, N, type){
   throw new Error('ไม่พบคำตอบของอัตราดอกเบี้ย (i) โปรดตรวจสอบเครื่องหมายบวก/ลบและค่าตัวแปรอื่น');
 }
 
+// ===================== แผนภาพเส้นเวลากระแสเงินสด =====================
+function drawTimeline(PV, PMT, FV, N, type, periodLabel){
+  const wrap = document.getElementById('timelineWrap');
+  let Nr = Math.max(1, Math.round(N));
+  if (Nr > 999) Nr = 999; // กันเคสสุดโต่ง
+
+  const maxTicks = 7;
+  let ticks = [];
+  if (Nr <= maxTicks){
+    for (let t = 0; t <= Nr; t++) ticks.push(t);
+  } else {
+    ticks = [0,1,2,'…',Nr-2,Nr-1,Nr];
+  }
+
+  const stepW = 78;
+  const leftPad = 46, rightPad = 46, topPad = 74;
+  const width = leftPad + rightPad + stepW*(ticks.length-1);
+  const height = topPad*2 + 30;
+  const baseY = height/2;
+  const arrowMax = topPad - 14;
+
+  function xOf(idx){ return leftPad + idx*stepW; }
+
+  function arrowSVG(x, value, key){
+    if (value === 0 || value === null || value === undefined) return '';
+    const isPos = value > 0;
+    const color = isPos ? '#1A5C43' : '#9C3B2E';
+    const y1 = baseY;
+    const y2 = isPos ? baseY - arrowMax : baseY + arrowMax;
+    const labelY = isPos ? y2 - 8 : y2 + 16;
+    const headSize = 5;
+    const headPath = isPos
+      ? `M${x-headSize},${y2+headSize*1.6} L${x},${y2} L${x+headSize},${y2+headSize*1.6} Z`
+      : `M${x-headSize},${y2-headSize*1.6} L${x},${y2} L${x+headSize},${y2-headSize*1.6} Z`;
+    return `
+      <line x1="${x}" y1="${y1}" x2="${x}" y2="${y2}" stroke="${color}" stroke-width="2"/>
+      <path d="${headPath}" fill="${color}"/>
+      <text x="${x}" y="${labelY}" text-anchor="middle" font-size="10.5" fill="${color}" font-weight="600">${key}</text>
+    `;
+  }
+
+  let svg = `<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;font-family:'IBM Plex Mono',monospace;">`;
+  svg += `<line x1="${leftPad}" y1="${baseY}" x2="${width-rightPad}" y2="${baseY}" stroke="#0B3D2E" stroke-width="1.6"/>`;
+
+  ticks.forEach((tv, idx) => {
+    const x = xOf(idx);
+    if (tv === '…'){
+      svg += `<text x="${x}" y="${baseY+4}" font-size="16" fill="#5B6B5F" text-anchor="middle">•••</text>`;
+      return;
+    }
+    svg += `<line x1="${x}" y1="${baseY-3}" x2="${x}" y2="${baseY+3}" stroke="#0B3D2E" stroke-width="1.6"/>`;
+    svg += `<text x="${x}" y="${baseY+22}" font-size="10.5" fill="#1E2A22" text-anchor="middle">${tv}</text>`;
+
+    if (tv === 0 && PV) svg += arrowSVG(x, PV, 'PV');
+    if (tv === Nr && FV) svg += arrowSVG(x, FV, 'FV');
+
+    const isPmtTick = (type === 0) ? (typeof tv === 'number' && tv > 0 && tv <= Nr)
+                                    : (typeof tv === 'number' && tv >= 0 && tv < Nr);
+    if (isPmtTick && PMT) svg += arrowSVG(x, PMT, 'PMT');
+  });
+
+  svg += `</svg>`;
+  wrap.innerHTML = svg;
+
+  const note = document.createElement('div');
+  note.className = 'formula-note';
+  note.textContent = 'แกนนอน = งวดที่ 0 ถึง ' + Nr + ' (หน่วย: ' + periodLabel + ') · ลูกศรขึ้น = เงินรับเข้า, ลูกศรลง = เงินจ่ายออก' +
+    (Nr > maxTicks ? ' · แสดงแบบย่อ เนื่องจากมีจำนวนงวดมาก' : '');
+  wrap.appendChild(note);
+}
+
+// ===================== สูตรที่ใช้คำนวณในแต่ละกรณี =====================
+function buildFormulaHTML(target, PV, FV, PMT, i, N, type){
+  const kTxt = type === 1 ? 'k=1 (จ่ายต้นงวด)' : 'k=0 (จ่ายปลายงวด)';
+  const base = `<div class="formula-block">
+      <div class="flabel">สมการหลักที่ใช้เป็นฐาน (${kTxt})</div>
+      <div class="formula-line">PV(1+i)<sup>N</sup> + PMT(1+i·k)×[(1+i)<sup>N</sup>−1]/i + FV = 0</div>
+    </div>`;
+
+  let block = '';
+
+  if (target === 'FV'){
+    block = `<div class="formula-block">
+      <div class="flabel">สูตรหา FV</div>
+      <div class="formula-line">FV = −PV(1+i)<sup>N</sup> − PMT(1+i·k)×[(1+i)<sup>N</sup>−1]/i</div>
+      <div class="formula-line">FV = −(${fmtPlain(PV,2)})(1+${fmtPlain(i,6)})<sup>${fmtPlain(N,2)}</sup> − (${fmtPlain(PMT,2)})(1+${fmtPlain(i,6)}×${type})×[(1+${fmtPlain(i,6)})<sup>${fmtPlain(N,2)}</sup>−1]/${fmtPlain(i,6)}</div>
+    </div>`;
+  } else if (target === 'PV'){
+    block = `<div class="formula-block">
+      <div class="flabel">สูตรหา PV</div>
+      <div class="formula-line">PV = [−FV − PMT(1+i·k)×[(1+i)<sup>N</sup>−1]/i] ÷ (1+i)<sup>N</sup></div>
+      <div class="formula-line">PV = [−(${fmtPlain(FV,2)}) − (${fmtPlain(PMT,2)})(1+${fmtPlain(i,6)}×${type})×[(1+${fmtPlain(i,6)})<sup>${fmtPlain(N,2)}</sup>−1]/${fmtPlain(i,6)}] ÷ (1+${fmtPlain(i,6)})<sup>${fmtPlain(N,2)}</sup></div>
+    </div>`;
+  } else if (target === 'PMT'){
+    block = `<div class="formula-block">
+      <div class="flabel">สูตรหา PMT</div>
+      <div class="formula-line">PMT = [−FV − PV(1+i)<sup>N</sup>] ÷ {(1+i·k)×[(1+i)<sup>N</sup>−1]/i}</div>
+      <div class="formula-line">PMT = [−(${fmtPlain(FV,2)}) − (${fmtPlain(PV,2)})(1+${fmtPlain(i,6)})<sup>${fmtPlain(N,2)}</sup>] ÷ {(1+${fmtPlain(i,6)}×${type})×[(1+${fmtPlain(i,6)})<sup>${fmtPlain(N,2)}</sup>−1]/${fmtPlain(i,6)}}</div>
+    </div>`;
+  } else if (target === 'N'){
+    block = `<div class="formula-block">
+      <div class="flabel">สูตรหา N</div>
+      <div class="formula-line">N = ln{ [PMT(1+i·k) − FV·i] ÷ [PMT(1+i·k) + PV·i] } ÷ ln(1+i)</div>
+      <div class="formula-line">N = ln{ [(${fmtPlain(PMT,2)})(1+${fmtPlain(i,6)}×${type}) − (${fmtPlain(FV,2)})(${fmtPlain(i,6)})] ÷ [(${fmtPlain(PMT,2)})(1+${fmtPlain(i,6)}×${type}) + (${fmtPlain(PV,2)})(${fmtPlain(i,6)})] } ÷ ln(1+${fmtPlain(i,6)})</div>
+    </div>`;
+  } else if (target === 'i'){
+    block = `<div class="formula-block">
+      <div class="flabel">สูตรหา i (ไม่มีสูตรปิด — ใช้วิธีเชิงตัวเลข)</div>
+      <div class="formula-line">f(i) = PV(1+i)<sup>N</sup> + PMT(1+i·k)×[(1+i)<sup>N</sup>−1]/i + FV = 0</div>
+      <div class="formula-line">f(i) = (${fmtPlain(PV,2)})(1+i)<sup>${fmtPlain(N,2)}</sup> + (${fmtPlain(PMT,2)})(1+i×${type})×[(1+i)<sup>${fmtPlain(N,2)}</sup>−1]/i + (${fmtPlain(FV,2)}) = 0</div>
+      <div class="formula-note">แก้หาค่า i ที่ทำให้ f(i) = 0 ด้วยวิธี Secant Method (วนคำนวณเชิงตัวเลขจนกว่าค่าจะลู่เข้าใกล้ 0 มากพอ) โดยลองจุดเริ่มต้นหลายค่าเพื่อไม่ให้ติดจุดที่หาคำตอบไม่ได้</div>
+    </div>`;
+  }
+
+  return base + block;
+}
+
 function calculate(){
   hideError();
   clearSolvedHighlight();
@@ -559,6 +879,7 @@ function calculate(){
     let result;
     let resultDisplay;
     let subLines = [];
+    let finalIPerPeriod = iDecimalPerPeriod; // จะถูกแทนที่ถ้ากำลังแก้หา i
 
     if (target === 'FV'){
       result = solveFV(PV, PMT, iDecimalPerPeriod, N, pmtType);
@@ -574,6 +895,7 @@ function calculate(){
       resultDisplay = formatNumber(result, 2) + ' ' + unitTh[periodUnit];
     } else if (target === 'i'){
       const iPerPeriod = solveI(PV, FV, PMT, N, pmtType);
+      finalIPerPeriod = iPerPeriod;
       if (rateUnit === 'annual'){
         result = iPerPeriod * ppy * 100;
         resultDisplay = formatNumber(result, 4) + ' % ต่อปี (Nominal)';
@@ -599,9 +921,203 @@ function calculate(){
       ' · ความถี่ของงวด: ราย' + unitTh[periodUnit];
     document.getElementById('resultSub').innerHTML = [baseLine].concat(subLines).join('<br>');
     document.getElementById('resultBox').classList.add('show');
+
+    // ค่าสุดท้ายครบทั้ง 5 ตัวแปร (แทนที่ค่าที่เพิ่งคำนวณได้เข้าไปในชุดตัวแปร)
+    const finalPV = target === 'PV' ? result : PV;
+    const finalFV = target === 'FV' ? result : FV;
+    const finalPMT = target === 'PMT' ? result : PMT;
+    const finalN = target === 'N' ? result : N;
+
+    drawTimeline(finalPV, finalPMT, finalFV, finalN, pmtType, unitTh[periodUnit]);
+    document.getElementById('timelineBox').classList.add('show');
+
+    document.getElementById('formulaContent').innerHTML =
+      buildFormulaHTML(target, finalPV, finalFV, finalPMT, finalIPerPeriod, finalN, pmtType);
+    document.getElementById('formulaBox').classList.add('show');
+
+    // เก็บค่าทั้งหมดไว้สำหรับหน้า "วิธีทำแบบละเอียด"
+    lastCalc = {
+      target, PV: finalPV, FV: finalFV, PMT: finalPMT, i: finalIPerPeriod, N: finalN,
+      type: pmtType, ppy, rateUnit, periodUnit, resultDisplay
+    };
   } catch(e){
     showError(e.message || 'ไม่สามารถคำนวณได้ กรุณาตรวจสอบข้อมูลที่กรอก');
   }
+}
+
+// ===================== หน้า "วิธีทำแบบละเอียด" =====================
+function openSolutionPage(){
+  if (!lastCalc) return;
+  renderSolutionPage(lastCalc);
+  document.getElementById('page-calculator').style.display = 'none';
+  document.getElementById('page-solution').style.display = 'block';
+  window.scrollTo(0,0);
+}
+function closeSolutionPage(){
+  document.getElementById('page-solution').style.display = 'none';
+  document.getElementById('page-calculator').style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+function solveIVerbose(PV, FV, PMT, N, type){
+  function f(iVal){
+    if (Math.abs(iVal) < 1e-12) return PV + PMT*N + FV;
+    const x = Math.pow(1+iVal, N);
+    return PV*x + PMT*(1+iVal*type)*fvifa(iVal, N) + FV;
+  }
+  const starts = [0.01, 0.05, 0.1, -0.05, 0.2, -0.2];
+  for (const s of starts){
+    let i0 = s, i1 = s+0.01, f0 = f(i0), f1 = f(i1);
+    const history = [{n:0, i:i0, f:f0}, {n:1, i:i1, f:f1}];
+    let converged = false;
+    for (let it=0; it<200; it++){
+      if (Math.abs(f1-f0) < 1e-14) break;
+      const i2 = i1 - f1*(i1-i0)/(f1-f0);
+      if (!isFinite(i2) || i2 <= -1) break;
+      i0=i1; f0=f1; i1=i2; f1=f(i1);
+      history.push({n: it+2, i:i1, f:f1});
+      if (Math.abs(f1) < 1e-8){ converged = true; break; }
+    }
+    if (converged) return { i: i1, history };
+  }
+  return { i: NaN, history: [] };
+}
+
+function renderSolutionPage(calc){
+  const { target, PV, FV, PMT, i, N, type, ppy, rateUnit, periodUnit, resultDisplay } = calc;
+  document.getElementById('solTitle').textContent = 'วิธีหา ' + thNames[target];
+  document.getElementById('solSubtitle').textContent = 'แสดงขั้นตอนแทนค่าทีละขั้น จากค่าที่กรอกไว้ในหน้าคำนวณ จนได้คำตอบสุดท้าย';
+
+  // --- ตารางค่าที่ทราบ / ค่าที่ต้องหา ---
+  const iDisplay = rateUnit === 'annual'
+    ? formatNumber(i*ppy*100, 4) + ' % ต่อปี (Nominal)'
+    : formatNumber(i*100, 4) + ' % ต่องวด';
+  const rows = [
+    { key:'PV', label:'มูลค่าปัจจุบัน (PV)', val: '฿ ' + formatNumber(PV,2) },
+    { key:'FV', label:'มูลค่าอนาคต (FV)', val: '฿ ' + formatNumber(FV,2) },
+    { key:'PMT', label:'เงินงวด (PMT)', val: '฿ ' + formatNumber(PMT,2) },
+    { key:'i', label:'อัตราดอกเบี้ย (i)', val: iDisplay },
+    { key:'N', label:'จำนวนงวด (N)', val: formatNumber(N,2) + ' ' + unitTh[periodUnit] },
+  ];
+  let givenHTML = '';
+  rows.forEach(r => {
+    const isTarget = r.key === target;
+    givenHTML += `<div class="sol-row"><span class="k">${r.label}${isTarget ? ' (ค่าที่หาได้)' : ''}</span><span class="v ${isTarget?'unknown':'given'}">${r.val}</span></div>`;
+  });
+  givenHTML += `<div class="sol-row"><span class="k">รูปแบบการจ่ายเงินงวด</span><span class="v given">${type===1?'จ่ายต้นงวด (k=1)':'จ่ายปลายงวด (k=0)'}</span></div>`;
+  givenHTML += `<div class="sol-row"><span class="k">ความถี่ของงวด</span><span class="v given">ราย${unitTh[periodUnit]}</span></div>`;
+  document.getElementById('solGivenList').innerHTML = givenHTML;
+
+  // --- ขั้นตอนคำนวณ ---
+  document.getElementById('solSteps').innerHTML = buildStepsHTML(target, PV, FV, PMT, i, N, type);
+
+  // --- คำตอบ ---
+  document.getElementById('solAnswer').textContent = resultDisplay;
+}
+
+function stepBlock(num, title, formula, desc){
+  return `<div class="sol-step">
+    <div class="step-num">ขั้นที่ ${num}</div>
+    <div class="step-title">${title}</div>
+    <div class="step-formula">${formula}</div>
+    ${desc ? `<div class="step-desc">${desc}</div>` : ''}
+  </div>`;
+}
+
+function buildStepsHTML(target, PV, FV, PMT, i, N, type){
+  const x = Math.pow(1+i, N);           // (1+i)^N
+  const af = fvifa(i, N);               // annuity factor
+  let html = '';
+
+  if (target === 'FV'){
+    html += stepBlock(1, 'คำนวณ (1+i)<sup>N</sup>',
+      `(1+${fmtPlain(i,6)})<sup>${fmtPlain(N,2)}</sup> = ${fmtPlain(x,6)}`,
+      'i คือดอกเบี้ยต่องวดในรูปทศนิยม, N คือจำนวนงวด');
+    html += stepBlock(2, 'คำนวณตัวคูณเงินงวด (Annuity Factor)',
+      `[(1+i)<sup>N</sup>−1] ÷ i = [${fmtPlain(x,6)}−1] ÷ ${fmtPlain(i,6)} = ${fmtPlain(af,6)}`,
+      i === 0 ? 'กรณี i = 0 ตัวคูณนี้เท่ากับ N โดยตรง' : '');
+    const pmtTerm = PMT*(1+i*type)*af;
+    html += stepBlock(3, 'คำนวณมูลค่าจากเงินงวดทั้งหมด',
+      `PMT×(1+i·k)×Annuity Factor = (${fmtPlain(PMT,2)})×(1+${fmtPlain(i,6)}×${type})×${fmtPlain(af,6)} = ${fmtPlain(pmtTerm,2)}`);
+    html += stepBlock(4, 'แทนค่าในสมการหลักเพื่อหา FV',
+      `FV = −PV×(1+i)<sup>N</sup> − (ผลจากขั้นที่ 3) = −(${fmtPlain(PV,2)})×${fmtPlain(x,6)} − (${fmtPlain(pmtTerm,2)}) = <b>฿ ${formatNumber(-(PV*x)-pmtTerm,2)}</b>`);
+
+  } else if (target === 'PV'){
+    html += stepBlock(1, 'คำนวณ (1+i)<sup>N</sup>',
+      `(1+${fmtPlain(i,6)})<sup>${fmtPlain(N,2)}</sup> = ${fmtPlain(x,6)}`);
+    html += stepBlock(2, 'คำนวณตัวคูณเงินงวด (Annuity Factor)',
+      `[(1+i)<sup>N</sup>−1] ÷ i = ${fmtPlain(af,6)}`,
+      i === 0 ? 'กรณี i = 0 ตัวคูณนี้เท่ากับ N โดยตรง' : '');
+    const pmtTerm = PMT*(1+i*type)*af;
+    html += stepBlock(3, 'คำนวณมูลค่าจากเงินงวดทั้งหมด',
+      `PMT×(1+i·k)×Annuity Factor = (${fmtPlain(PMT,2)})×(1+${fmtPlain(i,6)}×${type})×${fmtPlain(af,6)} = ${fmtPlain(pmtTerm,2)}`);
+    const pv = ( -FV - pmtTerm ) / x;
+    html += stepBlock(4, 'แทนค่าในสมการหลักเพื่อหา PV',
+      `PV = [−FV − (ผลจากขั้นที่ 3)] ÷ (1+i)<sup>N</sup> = [−(${fmtPlain(FV,2)}) − (${fmtPlain(pmtTerm,2)})] ÷ ${fmtPlain(x,6)} = <b>฿ ${formatNumber(pv,2)}</b>`);
+
+  } else if (target === 'PMT'){
+    html += stepBlock(1, 'คำนวณ (1+i)<sup>N</sup>',
+      `(1+${fmtPlain(i,6)})<sup>${fmtPlain(N,2)}</sup> = ${fmtPlain(x,6)}`);
+    html += stepBlock(2, 'คำนวณตัวคูณเงินงวด (Annuity Factor)',
+      `[(1+i)<sup>N</sup>−1] ÷ i = ${fmtPlain(af,6)}`);
+    const denom = (1+i*type)*af;
+    html += stepBlock(3, 'คำนวณตัวหาร (ตัวคูณของ PMT ในสมการ)',
+      `(1+i·k)×Annuity Factor = (1+${fmtPlain(i,6)}×${type})×${fmtPlain(af,6)} = ${fmtPlain(denom,6)}`);
+    const numer = -FV - PV*x;
+    html += stepBlock(4, 'คำนวณตัวตั้ง',
+      `−FV − PV×(1+i)<sup>N</sup> = −(${fmtPlain(FV,2)}) − (${fmtPlain(PV,2)})×${fmtPlain(x,6)} = ${fmtPlain(numer,2)}`);
+    html += stepBlock(5, 'หาร เพื่อหา PMT',
+      `PMT = (ผลจากขั้นที่ 4) ÷ (ผลจากขั้นที่ 3) = ${fmtPlain(numer,2)} ÷ ${fmtPlain(denom,6)} = <b>฿ ${formatNumber(numer/denom,2)}</b>`);
+
+  } else if (target === 'N'){
+    if (Math.abs(i) < 1e-12){
+      html += stepBlock(1, 'กรณีพิเศษ: อัตราดอกเบี้ย i = 0',
+        `PV + PMT×N + FV = 0`,
+        'เมื่อไม่มีดอกเบี้ย ความสัมพันธ์จะเป็นเชิงเส้นตรง ไม่ต้องใช้ลอการิทึม');
+      const n = -(PV+FV)/PMT;
+      html += stepBlock(2, 'แก้สมการหา N',
+        `N = −(PV+FV) ÷ PMT = −(${fmtPlain(PV,2)}+${fmtPlain(FV,2)}) ÷ ${fmtPlain(PMT,2)} = <b>${formatNumber(n,2)} ${unitTh[periodUnit] || ''}</b>`);
+    } else {
+      const k = PMT*(1+i*type)/i;
+      html += stepBlock(1, 'คำนวณตัวแปรช่วย k',
+        `k = PMT×(1+i·type) ÷ i = (${fmtPlain(PMT,2)})×(1+${fmtPlain(i,6)}×${type}) ÷ ${fmtPlain(i,6)} = ${fmtPlain(k,4)}`);
+      const numer = k - FV;
+      const denom = PV + k;
+      html += stepBlock(2, 'คำนวณตัวตั้งและตัวหารของอัตราส่วน',
+        `ตัวตั้ง = k−FV = ${fmtPlain(k,4)}−${fmtPlain(FV,2)} = ${fmtPlain(numer,4)}<br>ตัวหาร = PV+k = ${fmtPlain(PV,2)}+${fmtPlain(k,4)} = ${fmtPlain(denom,4)}`);
+      const ratio = numer/denom;
+      html += stepBlock(3, 'คำนวณอัตราส่วน แล้วหาผลลอการิทึม',
+        `N = ln(ตัวตั้ง ÷ ตัวหาร) ÷ ln(1+i) = ln(${fmtPlain(ratio,6)}) ÷ ln(1+${fmtPlain(i,6)}) = <b>${formatNumber(Math.log(ratio)/Math.log(1+i),2)} ${unitTh[periodUnit] || ''}</b>`);
+    }
+
+  } else if (target === 'i'){
+    html += stepBlock(1, 'ตั้งสมการที่ต้องแก้ f(i) = 0',
+      `f(i) = PV(1+i)<sup>N</sup> + PMT(1+i·k)×[(1+i)<sup>N</sup>−1]/i + FV`,
+      'ต้องหาค่า i ที่ทำให้ f(i) เท่ากับ 0 พอดี ซึ่งไม่มีสูตรปิดสำหรับแก้สมการนี้โดยตรง');
+
+    const verbose = solveIVerbose(PV, FV, PMT, N, type);
+    let tableRows = '';
+    verbose.history.slice(0, 8).forEach(h => {
+      tableRows += `<tr><td>${h.n}</td><td>${fmtPlain(h.i,6)}</td><td>${fmtPlain(h.f,4)}</td></tr>`;
+    });
+    const iterTable = `<table class="iter-table">
+        <thead><tr><th>รอบที่</th><th>ค่า i ที่ลอง</th><th>f(i) ที่ได้</th></tr></thead>
+        <tbody>${tableRows}</tbody>
+      </table>`;
+    html += `<div class="sol-step">
+        <div class="step-num">ขั้นที่ 2</div>
+        <div class="step-title">วนคำนวณด้วยวิธี Secant Method</div>
+        <div class="step-desc">เริ่มจากค่าประมาณ 2 ค่า แล้วปรับค่า i ไปเรื่อย ๆ ตามความชันของ f(i) จนกว่า f(i) จะเข้าใกล้ 0 มากพอ (ตารางด้านล่างแสดงตัวอย่างการลู่เข้าบางรอบ):</div>
+        ${iterTable}
+      </div>`;
+
+    const iShow = i*100;
+    html += stepBlock(3, 'สรุปค่า i ต่องวดที่ลู่เข้า แล้วแปลงหน่วยตามที่เลือก',
+      `i ต่องวด ≈ ${fmtPlain(i,6)} (หรือ ${formatNumber(iShow,4)} % ต่องวด)`,
+      'ถ้าเลือกแสดงผลเป็น "ต่อปี (Nominal)" ระบบจะนำค่านี้ไปคูณด้วยจำนวนงวดต่อปีอีกครั้งในผลลัพธ์สุดท้าย');
+  }
+
+  return html;
 }
 </script>
 </body>
