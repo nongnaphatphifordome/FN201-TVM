@@ -63,6 +63,55 @@
     line-height:1.6;
   }
 
+  .mode-select{
+    margin-bottom: 20px;
+  }
+  .mode-select-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    font-weight:700;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .mode-select-toggle{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .mode-select-toggle button{
+    border: 2px solid var(--line);
+    background: var(--paper);
+    border-radius: 8px;
+    padding: 14px 10px;
+    font-family:'Noto Sans Thai', sans-serif;
+    font-size: 14px;
+    font-weight:700;
+    color: var(--ink-soft);
+    cursor:pointer;
+    text-align:center;
+    line-height:1.5;
+    transition: all 0.15s ease;
+  }
+  .mode-select-toggle button .mode-icon{
+    display:block;
+    font-size: 22px;
+    margin-bottom: 4px;
+  }
+  .mode-select-toggle button small{
+    font-weight:500;
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    color: var(--ink-soft);
+  }
+  .mode-select-toggle button.active{
+    border-color: var(--primary);
+    background: var(--primary);
+    color: #fff;
+  }
+  .mode-select-toggle button.active small{ color: #CFE0D6; }
+
   .panel{
     background: var(--paper);
     border: 1px solid var(--line);
@@ -115,6 +164,7 @@
 
   .field{
     display:flex;
+    flex-wrap: wrap;
     align-items:flex-end;
     justify-content:space-between;
     gap: 12px;
@@ -397,6 +447,101 @@
   .iter-table th:first-child, .iter-table td:first-child{ text-align:left; }
   .iter-table th{ color: var(--ink-soft); font-weight:600; }
 
+  .uneven-hint{
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height:1.6;
+    margin-bottom: 4px;
+  }
+  .uneven-example-btn{
+    background:none;
+    border:none;
+    color: var(--primary);
+    font-size: 12px;
+    font-weight:700;
+    text-decoration: underline;
+    cursor:pointer;
+    padding: 0;
+    margin-bottom: 14px;
+    display:inline-block;
+  }
+
+  .cf-card{
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 12px 14px 14px;
+    margin-bottom: 10px;
+  }
+  .cf-card-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom: 10px;
+  }
+  .cf-card-head .cf-num{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    font-weight:700;
+    color: var(--accent);
+    letter-spacing:0.03em;
+  }
+  .cf-card-head .cf-remove{
+    background:none;
+    border:none;
+    color: var(--danger);
+    font-size: 12px;
+    font-weight:600;
+    cursor:pointer;
+    padding: 2px 4px;
+  }
+  .cf-card-body{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .cf-field label{
+    display:block;
+    font-size: 11px;
+    color: var(--ink-soft);
+    margin-bottom: 4px;
+  }
+  .cf-field input{
+    width:100%;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--paper);
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 13.5px;
+    padding: 8px 9px;
+    color: var(--ink);
+    outline:none;
+  }
+  .cf-field input::placeholder{ color:#B9C0B4; font-size:12px; }
+  .cf-field input:focus{ border-color: var(--primary); }
+  .cf-field.amt-out input{ color: var(--danger); font-weight:700; }
+  .cf-field.amt-in input{ color: var(--primary); font-weight:700; }
+  .date-preview{
+    font-size: 11px;
+    color: var(--primary);
+    margin-top: 4px;
+    min-height: 14px;
+  }
+  .date-preview .dp-error{ color: var(--danger); }
+
+  .npv-chart-wrap{ overflow-x:auto; }
+  .history-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--line);
+    font-size: 12.5px;
+  }
+  .history-item:last-child{ border-bottom:none; }
+  .history-item .h-meta{ color: var(--ink-soft); font-size:11px; }
+  .history-item .h-val{ font-family:'IBM Plex Mono', monospace; font-weight:600; color: var(--ink); }
+
   footer{
     text-align:center;
     font-size: 11.5px;
@@ -415,7 +560,20 @@
     <p>กรอกข้อมูล 4 ใน 5 ช่อง แล้วเว้นว่างช่องที่ต้องการหาคำตอบไว้ 1 ช่อง จากนั้นกดคำนวณ</p>
   </div>
 
+  <div class="mode-select">
+    <div class="mode-select-label">เลือกโหมดการคำนวณ</div>
+    <div class="mode-select-toggle">
+      <button id="btnModeStd" class="active" onclick="setMode('standard')">
+        <span class="mode-icon">📊</span>งวดเท่ากัน<br><small>เงินงวดจำนวนเท่ากันทุกงวด</small>
+      </button>
+      <button id="btnModeUneven" onclick="setMode('uneven')">
+        <span class="mode-icon">📅</span>กระแสเงินสดไม่เท่ากัน<br><small>แต่ละงวดจำนวนไม่เท่ากัน</small>
+      </button>
+    </div>
+  </div>
+
   <div class="panel">
+    <div id="standardFields">
     <div class="toggle-row">
       <div class="label">รูปแบบการจ่ายเงินงวด</div>
       <div class="toggle">
@@ -496,12 +654,43 @@
       </div>
     </div>
 
+    <div class="hint">หมายเหตุ: ใส่เครื่องหมายลบหน้าตัวเลขสำหรับเงินที่จ่ายออก (เช่น เงินลงทุน) และปล่อยเป็นค่าบวกสำหรับเงินที่ได้รับ เพื่อให้สมการคำนวณถูกต้องตามหลักการเงิน · ถ้าเลือก "ต่อปี (Nominal)" ระบบจะแปลงเป็นอัตราต่องวดให้อัตโนมัติก่อนคำนวณ แล้วแปลงกลับเป็นรายปีตอนแสดงผล</div>
+    </div>
+
+    <div id="unevenFields" style="display:none;">
+      <div class="uneven-hint">จ่ายออกใส่ค่าลบ เช่น -100000 · รับเข้าใส่ค่าบวก เช่น 30000 · วันที่พิมพ์แบบ วัน/เดือน/ปี เช่น 1/2/03</div>
+      <button type="button" class="uneven-example-btn" onclick="loadCfExample()">↺ ลองดูตัวอย่างข้อมูล</button>
+
+      <div id="cfRows"></div>
+      <button class="btn btn-ghost" style="width:100%;margin-top:6px;" onclick="addCashFlowRow()">+ เพิ่มงวด</button>
+
+      <div class="field" style="margin-top:14px;">
+        <div class="fmeta">
+          <div class="abbr">t₀</div>
+          <div class="thname">วันที่อ้างอิงคิด PV</div>
+        </div>
+        <div class="finput">
+          <input type="text" inputmode="numeric" id="in-valdate" placeholder="ว่าง = ใช้งวดแรกสุด" oninput="previewValDate(this.value)">
+        </div>
+        <div class="date-preview" id="datePreview-val" style="flex-basis:100%;text-align:right;"></div>
+      </div>
+
+      <div class="field" style="margin-top:6px;">
+        <div class="fmeta">
+          <div class="abbr">r</div>
+          <div class="thname">อัตราคิดลดต่อปี (หา NPV)</div>
+        </div>
+        <div class="finput">
+          <input type="text" inputmode="decimal" id="in-discount" placeholder="0.00">
+          <span class="unit">%</span>
+        </div>
+      </div>
+    </div>
+
     <div class="actions">
       <button class="btn btn-ghost" onclick="clearAll()">ล้างข้อมูล</button>
       <button class="btn btn-primary" onclick="calculate()">คำนวณ</button>
     </div>
-
-    <div class="hint">หมายเหตุ: ใส่เครื่องหมายลบหน้าตัวเลขสำหรับเงินที่จ่ายออก (เช่น เงินลงทุน) และปล่อยเป็นค่าบวกสำหรับเงินที่ได้รับ เพื่อให้สมการคำนวณถูกต้องตามหลักการเงิน · ถ้าเลือก "ต่อปี (Nominal)" ระบบจะแปลงเป็นอัตราต่องวดให้อัตโนมัติก่อนคำนวณ แล้วแปลงกลับเป็นรายปีตอนแสดงผล</div>
   </div>
 
   <div class="message" id="errorBox"></div>
@@ -510,11 +699,11 @@
     <div class="rlabel" id="resultLabel">ผลลัพธ์</div>
     <div class="rvalue" id="resultValue">0.00</div>
     <div class="rsub" id="resultSub"></div>
-    <button class="btn-solution" onclick="openSolutionPage()">📖 ดูวิธีทำแบบละเอียด</button>
+    <button class="btn-solution" id="btnSolutionPage" onclick="openSolutionPage()">📖 ดูวิธีทำแบบละเอียด</button>
   </div>
 
   <div class="subpanel" id="timelineBox">
-    <div class="subpanel-title">แผนภาพเส้นเวลากระแสเงินสด (Cash Flow Timeline)</div>
+    <div class="subpanel-title" id="timelineTitle">แผนภาพเส้นเวลากระแสเงินสด (Cash Flow Timeline)</div>
     <div id="timelineWrap"></div>
     <div class="legend">
       <span><i class="dot dot-in"></i>เงินรับเข้า (+)</span>
@@ -522,9 +711,21 @@
     </div>
   </div>
 
+  <div class="subpanel" id="npvChartBox">
+    <div class="subpanel-title">กราฟ NPV เทียบกับอัตราคิดลด</div>
+    <div class="npv-chart-wrap" id="npvChartWrap"></div>
+    <div class="formula-note">จุดตัดเส้นศูนย์ = IRR</div>
+  </div>
+
   <div class="subpanel" id="formulaBox">
     <div class="subpanel-title">สูตรที่ใช้คำนวณ</div>
     <div id="formulaContent"></div>
+  </div>
+
+  <div class="subpanel" id="historyBox">
+    <div class="subpanel-title">ประวัติการคำนวณล่าสุด (บันทึกในเบราว์เซอร์นี้)</div>
+    <div id="historyList"></div>
+    <button class="btn btn-ghost" style="width:100%;margin-top:10px;" onclick="clearHistory()">ล้างประวัติ</button>
   </div>
 
   <footer>คำนวณตามสมการมูลค่าเงินตามเวลามาตรฐาน (5 ตัวแปร)</footer>
@@ -555,6 +756,8 @@
 
 <script>
 let lastCalc = null; // เก็บค่าที่ใช้ในการคำนวณครั้งล่าสุด สำหรับหน้า "วิธีทำ"
+let mode = 'standard'; // 'standard' = งวดเท่ากัน, 'uneven' = กระแสเงินสดไม่เท่ากัน
+let cfRows = [ {date:'', amount:''}, {date:'', amount:''}, {date:'', amount:''} ];
 let pmtType = 0; // 0 = ordinary (ปลายงวด), 1 = due (ต้นงวด)
 let periodUnit = 'month'; // 'month' รายเดือน | 'quarter' รายไตรมาส | 'year' รายปี → กำหนดว่า 1 งวด เท่ากับอะไร
 let rateUnit = 'period';  // 'period' = อัตราต่องวด (ตรงกับ periodUnit), 'annual' = อัตราต่อปี (nominal, แปลงหาร/คูณด้วยจำนวนงวดต่อปี)
@@ -613,6 +816,138 @@ function updateRateLabel(){
   }
 }
 
+// ===================== โหมดคำนวณ: งวดเท่ากัน vs กระแสเงินสดไม่เท่ากัน =====================
+function setMode(m){
+  mode = m;
+  document.getElementById('btnModeStd').classList.toggle('active', m==='standard');
+  document.getElementById('btnModeUneven').classList.toggle('active', m==='uneven');
+  document.getElementById('standardFields').style.display = (m==='standard') ? 'block' : 'none';
+  document.getElementById('unevenFields').style.display = (m==='uneven') ? 'block' : 'none';
+  // ปุ่ม "ดูวิธีทำแบบละเอียด" รองรับเฉพาะโหมดงวดเท่ากันในตอนนี้
+  document.getElementById('btnSolutionPage').style.display = (m==='standard') ? 'block' : 'none';
+
+  hideError();
+  document.getElementById('resultBox').classList.remove('show');
+  document.getElementById('timelineBox').classList.remove('show');
+  document.getElementById('formulaBox').classList.remove('show');
+  document.getElementById('npvChartBox').classList.remove('show');
+
+  if (m === 'uneven' && document.getElementById('cfRows').children.length === 0){
+    renderCfRows();
+  }
+}
+
+// ---- แปลงข้อความวันที่แบบพิมพ์อิสระ เช่น "1/2/03", "15-12-2024" ----
+const THAI_MONTHS = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+
+function parseFlexibleDate(str){
+  if (!str || !str.trim()) return null;
+  const parts = str.trim().split(/[\/\.\-\s]+/).filter(Boolean);
+  if (parts.length < 3) return null;
+  let d = parseInt(parts[0],10), m = parseInt(parts[1],10), y = parseInt(parts[2],10);
+  if (isNaN(d) || isNaN(m) || isNaN(y)) return null;
+  if (y < 100) y += 2000;          // ปี 2 หลัก เช่น "03" → ค.ศ. 2003
+  if (y > 2400) y -= 543;          // ปี พ.ศ. → แปลงเป็น ค.ศ.
+  if (m < 1 || m > 12 || d < 1 || d > 31) return null;
+  const dt = new Date(y, m-1, d);
+  if (dt.getFullYear() !== y || dt.getMonth() !== m-1 || dt.getDate() !== d) return null;
+  return dt;
+}
+
+function formatThaiDateFull(d){
+  return d.getDate() + ' ' + THAI_MONTHS[d.getMonth()] + ' ' + d.getFullYear();
+}
+
+function formatDatePreview(dateStr){
+  if (!dateStr || !dateStr.trim()) return '';
+  const d = parseFlexibleDate(dateStr);
+  if (!d) return '<span class="dp-error">อ่านวันที่ไม่ออก ลองรูปแบบ วว/ดด/ปปปป</span>';
+  return '→ ' + formatThaiDateFull(d);
+}
+
+function previewDate(idx, val){
+  const el = document.getElementById('datePreview-'+idx);
+  if (el) el.innerHTML = formatDatePreview(val);
+}
+
+function previewValDate(val){
+  const el = document.getElementById('datePreview-val');
+  if (el) el.innerHTML = formatDatePreview(val);
+}
+
+function onDateInput(idx, el){
+  updateCfRow(idx, 'date', el.value);
+  previewDate(idx, el.value);
+}
+
+function onAmountInput(idx, el){
+  updateCfRow(idx, 'amount', el.value);
+  const field = el.closest('.cf-field');
+  field.classList.remove('amt-in','amt-out');
+  const v = el.value.trim();
+  if (v.startsWith('-')) field.classList.add('amt-out');
+  else if (v !== '') field.classList.add('amt-in');
+}
+
+function renderCfRows(){
+  const wrap = document.getElementById('cfRows');
+  wrap.innerHTML = cfRows.map((row, idx) => {
+    const v = String(row.amount).trim();
+    const amtClass = v.startsWith('-') ? 'amt-out' : (v !== '' ? 'amt-in' : '');
+    return `
+    <div class="cf-card">
+      <div class="cf-card-head">
+        <span class="cf-num">งวดที่ ${idx+1}</span>
+        <button type="button" class="cf-remove" onclick="removeCashFlowRow(${idx})">ลบงวดนี้ ✕</button>
+      </div>
+      <div class="cf-card-body">
+        <div class="cf-field">
+          <label>วันที่</label>
+          <input type="text" inputmode="numeric" placeholder="เช่น 1/2/03" value="${row.date}"
+            oninput="onDateInput(${idx}, this)">
+          <div class="date-preview" id="datePreview-${idx}">${formatDatePreview(row.date)}</div>
+        </div>
+        <div class="cf-field ${amtClass}">
+          <label>จำนวนเงิน (บาท)</label>
+          <input type="text" inputmode="decimal" placeholder="+รับ / −จ่าย" value="${row.amount}"
+            oninput="onAmountInput(${idx}, this)">
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateCfRow(idx, field, val){
+  if (!cfRows[idx]) return;
+  cfRows[idx][field] = val;
+}
+
+function addCashFlowRow(){
+  cfRows.push({date:'', amount:''});
+  renderCfRows();
+}
+
+function removeCashFlowRow(idx){
+  if (cfRows.length <= 2){
+    showError('ต้องมีอย่างน้อย 2 งวดในการคำนวณ');
+    return;
+  }
+  cfRows.splice(idx, 1);
+  renderCfRows();
+}
+
+function loadCfExample(){
+  cfRows = [
+    {date:'1/1/24', amount:'-100000'},
+    {date:'1/7/24', amount:'30000'},
+    {date:'1/1/25', amount:'40000'},
+    {date:'1/7/25', amount:'50000'}
+  ];
+  renderCfRows();
+  document.getElementById('in-discount').value = '10';
+  calculateUneven();
+}
+
 function showError(msg){
   const box = document.getElementById('errorBox');
   box.textContent = msg;
@@ -620,6 +955,7 @@ function showError(msg){
   document.getElementById('resultBox').classList.remove('show');
   document.getElementById('timelineBox').classList.remove('show');
   document.getElementById('formulaBox').classList.remove('show');
+  document.getElementById('npvChartBox').classList.remove('show');
 }
 function hideError(){
   document.getElementById('errorBox').classList.remove('show');
@@ -629,12 +965,21 @@ function clearSolvedHighlight(){
 }
 
 function clearAll(){
-  fields.forEach(f => document.getElementById('in-'+f).value = '');
   hideError();
   document.getElementById('resultBox').classList.remove('show');
   document.getElementById('timelineBox').classList.remove('show');
   document.getElementById('formulaBox').classList.remove('show');
-  clearSolvedHighlight();
+  document.getElementById('npvChartBox').classList.remove('show');
+  if (mode === 'uneven'){
+    cfRows = [ {date:'', amount:''}, {date:'', amount:''}, {date:'', amount:''} ];
+    renderCfRows();
+    document.getElementById('in-discount').value = '';
+    document.getElementById('in-valdate').value = '';
+    document.getElementById('datePreview-val').innerHTML = '';
+  } else {
+    fields.forEach(f => document.getElementById('in-'+f).value = '');
+    clearSolvedHighlight();
+  }
 }
 
 function formatNumber(num, decimals){
@@ -838,6 +1183,11 @@ function buildFormulaHTML(target, PV, FV, PMT, i, N, type){
 }
 
 function calculate(){
+  if (mode === 'uneven') return calculateUneven();
+  return calculateStandard();
+}
+
+function calculateStandard(){
   hideError();
   clearSolvedHighlight();
 
@@ -940,12 +1290,323 @@ function calculate(){
       target, PV: finalPV, FV: finalFV, PMT: finalPMT, i: finalIPerPeriod, N: finalN,
       type: pmtType, ppy, rateUnit, periodUnit, resultDisplay
     };
+
+    saveHistory('งวดเท่ากัน · หา ' + thNames[target], resultDisplay);
   } catch(e){
     showError(e.message || 'ไม่สามารถคำนวณได้ กรุณาตรวจสอบข้อมูลที่กรอก');
   }
 }
 
-// ===================== หน้า "วิธีทำแบบละเอียด" =====================
+// ===================== โหมด: กระแสเงินสดไม่เท่ากัน (Uneven / XNPV-XIRR style) =====================
+const MS_PER_DAY = 24*60*60*1000;
+
+function xnpv(rate, days, amounts){
+  let sum = 0;
+  for (let k=0;k<amounts.length;k++){
+    sum += amounts[k] / Math.pow(1+rate, days[k]/365);
+  }
+  return sum;
+}
+
+function solveXIRR(days, amounts){
+  function f(r){ return xnpv(r, days, amounts); }
+  const starts = [0.1, 0.3, -0.3, 0.5, -0.5, 1, -0.9];
+  for (const s of starts){
+    let r0 = s, r1 = s+0.05, f0 = f(r0), f1 = f(r1);
+    let converged = false;
+    for (let it=0; it<200; it++){
+      if (Math.abs(f1-f0) < 1e-14) break;
+      const r2 = r1 - f1*(r1-r0)/(f1-f0);
+      if (!isFinite(r2) || r2 <= -1) break;
+      r0=r1; f0=f1; r1=r2; f1=f(r1);
+      if (Math.abs(f1) < 1e-6){ converged = true; break; }
+    }
+    if (converged) return r1;
+  }
+  return null;
+}
+
+function calculateUneven(){
+  hideError();
+
+  const validRows = cfRows.filter(r => r.date !== '' || r.amount !== '');
+  const parsedRows = [];
+  for (const r of validRows){
+    if (r.date === '' || r.amount === ''){
+      showError('กรุณากรอกทั้งวันที่และจำนวนเงินให้ครบทุกงวดที่เพิ่มไว้ (หรือลบงวดที่ไม่ใช้ออก)');
+      return;
+    }
+    const amt = Number(String(r.amount).replace(/,/g,''));
+    if (isNaN(amt)){
+      showError('จำนวนเงินในบางงวดไม่ใช่ตัวเลข กรุณาตรวจสอบ');
+      return;
+    }
+    const d = parseFlexibleDate(r.date);
+    if (!d){
+      showError('วันที่ในบางงวดอ่านไม่ออก กรุณาใช้รูปแบบ วัน/เดือน/ปี เช่น 1/2/03 หรือ 15/12/2024');
+      return;
+    }
+    parsedRows.push({ date: d, amount: amt, dateStr: r.date });
+  }
+
+  if (parsedRows.length < 2){
+    showError('กรุณากรอกอย่างน้อย 2 งวด (เช่น เงินลงทุนเริ่มต้น และเงินที่ได้รับอย่างน้อย 1 งวด)');
+    return;
+  }
+
+  parsedRows.sort((a,b) => a.date - b.date);
+  const t0Auto = parsedRows[0].date;
+
+  // วันที่อ้างอิงสำหรับคิด PV/NPV — ถ้าไม่กรอก ใช้วันที่งวดแรกสุดเป็นค่าเริ่มต้น
+  const valRaw = document.getElementById('in-valdate').value.trim();
+  let valDate = t0Auto;
+  if (valRaw !== ''){
+    const vd = parseFlexibleDate(valRaw);
+    if (!vd){
+      showError('วันที่อ้างอิงคิด PV อ่านไม่ออก กรุณาใช้รูปแบบ วัน/เดือน/ปี เช่น 1/2/03');
+      return;
+    }
+    valDate = vd;
+  }
+
+  const daysFromFirst = parsedRows.map(r => Math.round((r.date - t0Auto) / MS_PER_DAY));   // ใช้หา IRR (คงที่ไม่ว่าจะอ้างอิงวันไหน)
+  const daysFromVal = parsedRows.map(r => Math.round((r.date - valDate) / MS_PER_DAY));      // ใช้หา NPV ณ วันอ้างอิงที่เลือก
+  const amounts = parsedRows.map(r => r.amount);
+
+  const hasPositive = amounts.some(a => a > 0);
+  const hasNegative = amounts.some(a => a < 0);
+  if (!hasPositive || !hasNegative){
+    showError('ต้องมีทั้งเงินจ่ายออก (ค่าลบ) และเงินรับเข้า (ค่าบวก) อย่างน้อยฝั่งละ 1 งวด');
+    return;
+  }
+
+  const discountRaw = document.getElementById('in-discount').value.trim();
+  let npv = null, discountPct = null;
+  if (discountRaw !== ''){
+    discountPct = Number(discountRaw.replace(/,/g,''));
+    if (isNaN(discountPct)){
+      showError('อัตราคิดลดต่อปีไม่ใช่ตัวเลข');
+      return;
+    }
+    npv = xnpv(discountPct/100, daysFromVal, amounts);
+  }
+
+  const irr = solveXIRR(daysFromFirst, amounts);
+
+  const totalDays = daysFromFirst[daysFromFirst.length-1];
+  const totalYears = totalDays/365;
+
+  let resultHTML = '';
+  if (npv !== null){
+    resultHTML += `NPV ≈ ฿ ${formatNumber(npv,2)}`;
+  }
+  if (irr !== null){
+    resultHTML += (resultHTML ? '<br>' : '') + `IRR ≈ ${formatNumber(irr*100,4)} % ต่อปี`;
+  } else {
+    resultHTML += (resultHTML ? '<br>' : '') + `IRR: ไม่พบคำตอบ`;
+  }
+
+  document.getElementById('resultLabel').textContent = 'ผลลัพธ์ · กระแสเงินสดไม่เท่ากัน';
+  document.getElementById('resultValue').innerHTML = resultHTML;
+  document.getElementById('resultSub').innerHTML =
+    `คิด PV ณ วันที่: ${formatThaiDateFull(valDate)} · ${parsedRows.length} งวด · ${totalDays} วัน (~${totalYears.toFixed(1)} ปี)` +
+    (npv === null ? '<br>กรอกอัตราคิดลดเพื่อดู NPV' : '');
+  document.getElementById('resultBox').classList.add('show');
+
+  drawTimelineDates(parsedRows, valDate);
+  document.getElementById('timelineTitle').textContent = 'เส้นเวลากระแสเงินสด (ตามวันที่จริง)';
+  document.getElementById('timelineBox').classList.add('show');
+
+  const formulaHTML = `<div class="formula-block">
+      <div class="flabel">สูตรที่ใช้</div>
+      <div class="formula-line">NPV = Σ CF<sub>i</sub> ÷ (1+r)<sup>d<sub>i</sub>/365</sup></div>
+      <div class="formula-note">d<sub>i</sub> = จำนวนวันจากวันอ้างอิงถึงงวดที่ i · IRR คือค่า r ที่ทำให้ NPV = 0 (แก้ด้วยวิธีเชิงตัวเลข)</div>
+    </div>`;
+  document.getElementById('formulaContent').innerHTML = formulaHTML;
+  document.getElementById('formulaBox').classList.add('show');
+
+  drawNpvChart(daysFromVal, amounts, discountPct, irr);
+  document.getElementById('npvChartBox').classList.add('show');
+
+  saveHistory('กระแสเงินสดไม่เท่ากัน', resultHTML.replace(/<br>/g,' · ').replace(/<[^>]+>/g,''));
+
+  lastCalc = null; // โหมดนี้ยังไม่รองรับหน้า "วิธีทำแบบละเอียด"
+}
+
+function drawTimelineDates(rows, valDate){
+  const wrap = document.getElementById('timelineWrap');
+  const t0 = rows[0].date;
+  const allDays = rows.map(r => (r.date - t0)/MS_PER_DAY);
+  const valDays = valDate ? (valDate - t0)/MS_PER_DAY : 0;
+  const minDays = Math.min(0, valDays, ...allDays);
+  const maxDays = Math.max(1, valDays, ...allDays);
+  const span = Math.max(1, maxDays - minDays);
+
+  const leftPad = 46, rightPad = 46, topPad = 74;
+  const usableWidth = Math.max(320, rows.length * 60);
+  const width = leftPad + rightPad + usableWidth;
+  const height = topPad*2 + 34;
+  const baseY = height/2;
+  const arrowMax = topPad - 14;
+
+  function xOf(days){ return leftPad + ((days-minDays)/span) * usableWidth; }
+  function fmtDate(d){
+    const dd = String(d.getDate()).padStart(2,'0');
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    const yy = String(d.getFullYear()).slice(-2);
+    return dd+'/'+mm+'/'+yy;
+  }
+
+  let svg = `<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;font-family:'IBM Plex Mono',monospace;">`;
+  svg += `<line x1="${leftPad}" y1="${baseY}" x2="${width-rightPad}" y2="${baseY}" stroke="#0B3D2E" stroke-width="1.6"/>`;
+
+  // เส้นประบอกตำแหน่งวันที่ใช้อ้างอิงคิด PV
+  if (valDate){
+    const vx = xOf(valDays);
+    svg += `<line x1="${vx}" y1="${topPad-24}" x2="${vx}" y2="${height-topPad+24}" stroke="#B08A2E" stroke-width="1.4" stroke-dasharray="4,3"/>`;
+    svg += `<text x="${vx}" y="${topPad-28}" font-size="9.5" fill="#B08A2E" font-weight="700" text-anchor="middle">PV</text>`;
+  }
+
+  rows.forEach(r => {
+    const days = (r.date - t0)/MS_PER_DAY;
+    const x = xOf(days);
+    svg += `<line x1="${x}" y1="${baseY-3}" x2="${x}" y2="${baseY+3}" stroke="#0B3D2E" stroke-width="1.6"/>`;
+    svg += `<text x="${x}" y="${baseY+22}" font-size="9.5" fill="#1E2A22" text-anchor="middle">${fmtDate(r.date)}</text>`;
+
+    const isPos = r.amount > 0;
+    const color = isPos ? '#1A5C43' : '#9C3B2E';
+    const y2 = isPos ? baseY - arrowMax : baseY + arrowMax;
+    const labelY = isPos ? y2 - 8 : y2 + 16;
+    const hs = 5;
+    const headPath = isPos
+      ? `M${x-hs},${y2+hs*1.6} L${x},${y2} L${x+hs},${y2+hs*1.6} Z`
+      : `M${x-hs},${y2-hs*1.6} L${x},${y2} L${x+hs},${y2-hs*1.6} Z`;
+    svg += `<line x1="${x}" y1="${baseY}" x2="${x}" y2="${y2}" stroke="${color}" stroke-width="2"/>`;
+    svg += `<path d="${headPath}" fill="${color}"/>`;
+    svg += `<text x="${x}" y="${labelY}" text-anchor="middle" font-size="9.5" fill="${color}" font-weight="600">${formatNumber(r.amount,0)}</text>`;
+  });
+
+  svg += `</svg>`;
+  wrap.innerHTML = svg;
+
+  const note = document.createElement('div');
+  note.className = 'formula-note';
+  note.textContent = 'ระยะห่างตามวันจริง · เส้นประสีทอง = วันอ้างอิงคิด PV';
+  wrap.appendChild(note);
+}
+
+// ===================== กราฟ NPV เทียบกับอัตราคิดลด =====================
+function drawNpvChart(days, amounts, discountPct, irr){
+  const wrap = document.getElementById('npvChartWrap');
+
+  // กำหนดช่วงอัตราที่จะพล็อต: ครอบคลุม IRR และอัตราคิดลดที่กรอก (ถ้ามี) เสมอ
+  let rMin = -0.5, rMax = 1.5;
+  if (irr !== null && isFinite(irr)){
+    rMin = Math.min(rMin, irr - 0.3);
+    rMax = Math.max(rMax, irr + 0.3);
+  }
+  if (discountPct !== null && isFinite(discountPct)){
+    rMin = Math.min(rMin, discountPct/100 - 0.1);
+    rMax = Math.max(rMax, discountPct/100 + 0.1);
+  }
+  rMin = Math.max(rMin, -0.95);
+
+  const steps = 60;
+  const pts = [];
+  for (let k=0;k<=steps;k++){
+    const r = rMin + (rMax-rMin)*k/steps;
+    pts.push({ r, npv: xnpv(r, days, amounts) });
+  }
+
+  const npvVals = pts.map(p=>p.npv).filter(v=>isFinite(v));
+  let yMin = Math.min(...npvVals, 0);
+  let yMax = Math.max(...npvVals, 0);
+  if (yMin === yMax){ yMin -= 1; yMax += 1; }
+  const yPad = (yMax-yMin)*0.1;
+  yMin -= yPad; yMax += yPad;
+
+  const width = 460, height = 240;
+  const leftPad = 64, rightPad = 16, topPad = 16, bottomPad = 34;
+  const plotW = width-leftPad-rightPad, plotH = height-topPad-bottomPad;
+
+  function xPix(r){ return leftPad + (r-rMin)/(rMax-rMin)*plotW; }
+  function yPix(v){ return topPad + (1-(v-yMin)/(yMax-yMin))*plotH; }
+
+  const zeroY = yPix(0);
+  const linePts = pts.filter(p=>isFinite(p.npv)).map(p => xPix(p.r)+','+yPix(p.npv)).join(' ');
+
+  let svg = `<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;font-family:'IBM Plex Mono',monospace;">`;
+  // เส้นศูนย์
+  svg += `<line x1="${leftPad}" y1="${zeroY}" x2="${width-rightPad}" y2="${zeroY}" stroke="#D9D2BE" stroke-width="1.5" stroke-dasharray="3,3"/>`;
+  svg += `<text x="${leftPad-6}" y="${zeroY+4}" font-size="10" fill="#5B6B5F" text-anchor="end">0</text>`;
+  // แกน y บน/ล่าง
+  svg += `<text x="${leftPad-6}" y="${topPad+8}" font-size="9.5" fill="#5B6B5F" text-anchor="end">${formatNumber(yMax,0)}</text>`;
+  svg += `<text x="${leftPad-6}" y="${height-bottomPad}" font-size="9.5" fill="#5B6B5F" text-anchor="end">${formatNumber(yMin,0)}</text>`;
+  // แกน x ป้ายอัตรา
+  [rMin, 0, rMax].forEach(r => {
+    const x = xPix(r);
+    svg += `<line x1="${x}" y1="${topPad}" x2="${x}" y2="${height-bottomPad}" stroke="#EFEBDF" stroke-width="1"/>`;
+    svg += `<text x="${x}" y="${height-bottomPad+16}" font-size="9.5" fill="#5B6B5F" text-anchor="middle">${(r*100).toFixed(0)}%</text>`;
+  });
+  // เส้นกราฟ NPV
+  svg += `<polyline points="${linePts}" fill="none" stroke="#0B3D2E" stroke-width="2.2"/>`;
+
+  // จุด IRR (NPV=0)
+  if (irr !== null && isFinite(irr) && irr >= rMin && irr <= rMax){
+    const ix = xPix(irr), iy = yPix(0);
+    svg += `<circle cx="${ix}" cy="${iy}" r="4.5" fill="#B08A2E"/>`;
+    svg += `<text x="${ix}" y="${iy-10}" font-size="10" fill="#B08A2E" font-weight="700" text-anchor="middle">IRR ${formatNumber(irr*100,2)}%</text>`;
+  }
+  // จุดอัตราคิดลดที่กรอก
+  if (discountPct !== null && isFinite(discountPct)){
+    const dr = discountPct/100;
+    if (dr >= rMin && dr <= rMax){
+      const dx = xPix(dr), dy = yPix(xnpv(dr, days, amounts));
+      svg += `<circle cx="${dx}" cy="${dy}" r="4.5" fill="#1A5C43" stroke="#fff" stroke-width="1.5"/>`;
+      svg += `<text x="${dx}" y="${dy-10}" font-size="10" fill="#1A5C43" font-weight="700" text-anchor="middle">r ที่เลือก</text>`;
+    }
+  }
+
+  svg += `</svg>`;
+  wrap.innerHTML = svg;
+}
+
+// ===================== ประวัติการคำนวณ (เก็บใน localStorage ของเบราว์เซอร์) =====================
+function saveHistory(label, valueText){
+  try{
+    const key = 'tvm_calc_history';
+    let list = JSON.parse(localStorage.getItem(key) || '[]');
+    list.unshift({ t: new Date().toLocaleString('th-TH'), label, value: valueText });
+    list = list.slice(0, 10);
+    localStorage.setItem(key, JSON.stringify(list));
+  } catch(e){ /* localStorage อาจไม่พร้อมใช้งาน ข้ามไปเงียบๆ */ }
+  renderHistoryList();
+}
+
+function renderHistoryList(){
+  const box = document.getElementById('historyBox');
+  const listEl = document.getElementById('historyList');
+  let list = [];
+  try{ list = JSON.parse(localStorage.getItem('tvm_calc_history') || '[]'); } catch(e){}
+  if (!list.length){
+    box.classList.remove('show');
+    return;
+  }
+  listEl.innerHTML = list.map(item => `
+    <div class="history-item">
+      <span>${item.label}<br><span class="h-meta">${item.t}</span></span>
+      <span class="h-val">${item.value}</span>
+    </div>
+  `).join('');
+  box.classList.add('show');
+}
+
+function clearHistory(){
+  try{ localStorage.removeItem('tvm_calc_history'); } catch(e){}
+  renderHistoryList();
+}
+
+
 function openSolutionPage(){
   if (!lastCalc) return;
   renderSolutionPage(lastCalc);
@@ -1119,6 +1780,8 @@ function buildStepsHTML(target, PV, FV, PMT, i, N, type){
 
   return html;
 }
+
+renderHistoryList(); // แสดงประวัติที่เคยบันทึกไว้ (ถ้ามี) ตอนโหลดหน้าเว็บ
 </script>
 </body>
 </html>
